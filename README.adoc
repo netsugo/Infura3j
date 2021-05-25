@@ -1,0 +1,43 @@
+= infura3j
+
+A small tool to mediate between Infura and Web3j.
+
+== Features
+
+* URL generation for Infura
+* HttpService/WebSocketService generation for Infura
+* header builder for Infura
+
+== Requirements
+
+* Java8 & up
+* web3j core
+* web3j hosted-providers
+
+.build.gradle
+[source,groovy]
+----
+...
+dependencies {
+    implementation "org.web3j:core:$web3jVersion"
+    implementation "org.web3j:hosted-providers:$web3jVersion"
+    ...
+}
+...
+----
+
+== Example
+
+[source,java]
+----
+public class Example() {
+    public static void eg() {
+        String url = Infura.createHttpUrl(Infura.Ropsten, "specify-project-id");
+        String projectSercret = "specify-project-secret"; // or null if infura project is not secret.
+        InfuraHttpService httpService = Infura.createHttpService(url, projectSercret);
+        WebSocketService wsService = Infura.createWsService(url, projectSercret);
+        // Create web3j instance with above web3j-services.
+        ...
+    }
+}
+----
