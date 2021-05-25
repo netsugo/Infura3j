@@ -1,4 +1,4 @@
-name: Build JAR
+name: Build jar
 
 on:
   push:
@@ -16,7 +16,7 @@ jobs:
           distribution: 'adopt'
           java-version: '11'
       - name: Build with Gradle
-        run: ./gradlew build
+        run: sh ./gradlew build
   gradle-release-jar:
     needs: build
     runs-on: ubuntu-latest
