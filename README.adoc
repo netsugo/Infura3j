@@ -32,10 +32,11 @@ dependencies {
 ----
 public class Example() {
     public static void eg() {
-        String url = Infura.createHttpUrl(Infura.Ropsten, "specify-project-id");
-        String projectSercret = "specify-project-secret"; // or null if infura project is not secret.
-        InfuraHttpService httpService = Infura.createHttpService(url, projectSercret);
-        WebSocketService wsService = Infura.createWsService(url, projectSercret);
+        String id = "specify-project-id";
+        String secret = "specify-project-secret"; // or null
+        String jwtKey = "specify-jwt-key"; // or null
+        InfuraHttpService httpService = Infura.createHttpService(Infura.Ropsten, id, sercret, jwtKey);
+        WebSocketService wsService = Infura.createWsService(Infura.Mainnet, id, null, null); // public project
         // Create web3j instance with above web3j-services.
         ...
     }

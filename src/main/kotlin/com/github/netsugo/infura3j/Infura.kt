@@ -1,10 +1,8 @@
 package com.github.netsugo.infura3j
 
-import org.web3j.protocol.http.HttpService
 import org.web3j.protocol.infura.InfuraHttpService
 import org.web3j.protocol.websocket.WebSocketClient
 import org.web3j.protocol.websocket.WebSocketService
-
 import java.net.URI
 
 object Infura {
@@ -15,6 +13,14 @@ object Infura {
     const val Goerli = "goerli"
     const val PolygonMainnet = "polygon-mainnet"
     const val PolygonMumbai = "polygon-mumbai"
+
+    @JvmStatic
+    private fun authHeaderMap(projectSecret: String?, token68Jwt: String?) = run {
+        val auth = Authorization()
+        if (projectSecret != null) auth.addSecret(projectSecret)
+        if (token68Jwt != null) auth.addJWT(token68Jwt)
+        auth.toMap()
+    }
 
     @JvmStatic
     fun createHttpUrl(network: String, projectId: String) =
@@ -29,20 +35,35 @@ object Infura {
         "wss://${network}.infura.io/ws/v3/${projectId}"
 
     @JvmStatic
-    fun createHttpService(url: String, projectSecret: String?): HttpService = run {
-        val headers = HeadersBuilder().apply {
-            projectSecret?.let { putProjectSecret(it) }
-        }.build()
-        InfuraHttpService(url).apply { addHeaders(headers) }
+    fun createHttpService(url: String, authorization: Authorization?) = run {
+        val map = authorization?.toMap() ?: emptyMap()
+        InfuraHttpService(url).apply { addHeaders(map) }
     }
 
     @JvmStatic
-    fun createWsService(url: String, projectSecret: String?) = run {
+    fun createHttpService(network: String, projectId: String, projectSecret: String?, token68Jwt: String?) = run {
+        val url = when {
+            network.startsWith("polygon-") -> createPolygonHttpUrl(network, projectId)
+            else -> createHttpUrl(network, projectId)
+        }
+        val map = authHeaderMap(projectSecret, token68Jwt)
+        InfuraHttpService(url).apply { addHeaders(map) }
+    }
+
+    @JvmStatic
+    fun createWsService(url: String, authorization: Authorization?) = run {
         val uri = URI.create(url)
-        val headers = HeadersBuilder().apply {
-            projectSecret?.let { putProjectSecret(it) }
-        }.build()
-        val client = WebSocketClient(uri, headers)
+        val map = authorization?.toMap() ?: emptyMap()
+        val client = WebSocketClient(uri, map)
+        WebSocketService(client, false)
+    }
+
+    @JvmStatic
+    fun createWsService(network: String, projectId: String, projectSecret: String?, token68Jwt: String?) = run {
+        val url = createWsUrl(network, projectId)
+        val uri = URI.create(url)
+        val map = authHeaderMap(projectSecret, token68Jwt)
+        val client = WebSocketClient(uri, map)
         WebSocketService(client, false)
     }
 }

@@ -1,4 +1,5 @@
 plugins {
+    id 'maven-publish'
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version '1.4.20'
     id 'org.ajoberstar.grgit' version '4.1.0'
@@ -38,4 +39,22 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/netsugo/infura3j")
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+                password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+            }
+        }
+    }
+    publications {
+        gpr(MavenPublication) {
+            from(components.java)
+        }
+    }
 }
