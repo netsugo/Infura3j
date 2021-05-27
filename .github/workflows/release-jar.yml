@@ -17,6 +17,11 @@ jobs:
           java-version: '11'
       - name: Build with Gradle
         run: sh ./gradlew build
+      - name: Release package
+        env:
+          USERNAME: netsugo
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: sh ./gradlew publish
       - name: Release jar
         uses: softprops/action-gh-release@v1
         with:
@@ -25,5 +30,3 @@ jobs:
             build/libs/*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Release package
-        run: sh ./gradlew publish
