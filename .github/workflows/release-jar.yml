@@ -30,3 +30,4 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: '11'
+        run: sh ./gradlew publish
