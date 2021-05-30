@@ -51,19 +51,28 @@ object Infura {
     }
 
     @JvmStatic
-    fun createWsService(url: String, authorization: Authorization?) = run {
-        val uri = URI.create(url)
+    fun createWsClient(uri: URI, authorization: Authorization?) = run {
         val map = authorization?.toMap() ?: emptyMap()
-        val client = WebSocketClient(uri, map)
+        WebSocketClient(uri, map)
+    }
+
+    @JvmStatic
+    fun createWsClient(network: String, projectId: String, projectSecret: String?, token68Jwt: String?) = run {
+        val url = createWsUrl(network, projectId)
+        val uri = URI.create(url)
+        val map = authHeaderMap(projectSecret, token68Jwt)
+        WebSocketClient(uri, map)
+    }
+
+    @JvmStatic
+    fun createWsService(uri: URI, authorization: Authorization?) = run {
+        val client = createWsClient(uri, authorization)
         WebSocketService(client, false)
     }
 
     @JvmStatic
     fun createWsService(network: String, projectId: String, projectSecret: String?, token68Jwt: String?) = run {
-        val url = createWsUrl(network, projectId)
-        val uri = URI.create(url)
-        val map = authHeaderMap(projectSecret, token68Jwt)
-        val client = WebSocketClient(uri, map)
+        val client = createWsClient(network, projectId, projectSecret, token68Jwt)
         WebSocketService(client, false)
     }
 }
